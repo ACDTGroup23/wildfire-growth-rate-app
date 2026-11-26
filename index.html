@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Post-Fire Planting Guide</title>
+<meta name="description" content="After a wildfire, estimate fire severity, ash load, soil salinity and pH, and see which barley-family crops are likely to grow. Prototype by USS Capstone Group 27.">
+<meta name="theme-color" content="#2f6b35">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="파종 길잡이">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<header class="bar">
+  <div class="wrap bar-in">
+    <div class="brand"><img src="icons/favicon.svg" alt="" width="28" height="28"><span data-i18n="appName">산불 후 파종 길잡이</span></div>
+    <button type="button" class="ghost" id="installBtn" hidden data-i18n="install">앱 설치</button>
+    <button type="button" class="ghost" id="langBtn">English</button>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="intro">
+    <h1 data-i18n="h1">불탄 땅에 무엇을 심을까요?</h1>
+    <p data-i18n="lede">산불 강도를 확인하면, 재가 흙의 염도와 pH를 얼마나 바꾸는지 계산해서 보리와 비슷한 작물 가운데 잘 자랄 것을 골라 드립니다. 모든 숫자에는 출처가 있습니다.</p>
+  </section>
+
+  <section class="step" id="step1" aria-labelledby="s1t">
+    <h2 id="s1t"><span class="num">1</span><span data-i18n="s1">땅 상태</span></h2>
+    <div class="tabs" role="tablist">
+      <button type="button" role="tab" id="tabTest" aria-selected="true" data-i18n="tabTest">산불 강도 체크</button>
+      <button type="button" role="tab" id="tabMeasure" aria-selected="false" data-i18n="tabMeasure">재 무게를 쟀어요</button>
+    </div>
+
+    <div id="paneTest" role="tabpanel">
+      <fieldset class="q" id="qTrees">
+        <legend data-i18n="qTrees">불이 나기 전에 나무가 있던 곳인가요?</legend>
+        <div class="opts two">
+          <label class="opt"><input type="radio" name="trees" value="yes"><span class="ic" data-icon="tree"></span><span data-i18n="treesYes">네, 숲이나 나무가 있던 곳</span></label>
+          <label class="opt"><input type="radio" name="trees" value="no"><span class="ic" data-icon="field"></span><span data-i18n="treesNo">아니요, 밭이나 풀밭</span></label>
+        </div>
+      </fieldset>
+      <fieldset class="q" id="qCanopy" hidden>
+        <legend data-i18n="qCanopy">나무 위쪽 잎은 어떤가요?</legend>
+        <div class="opts three">
+          <label class="opt"><input type="radio" name="canopy" value="green"><span class="ic" data-icon="green"></span><span data-i18n="canGreen">초록색 그대로</span></label>
+          <label class="opt"><input type="radio" name="canopy" value="scorched"><span class="ic" data-icon="scorched"></span><span data-i18n="canScorched">갈색으로 그을림</span></label>
+          <label class="opt"><input type="radio" name="canopy" value="consumed"><span class="ic" data-icon="consumed"></span><span data-i18n="canConsumed">잎과 가는 가지까지 다 탐</span></label>
+        </div>
+      </fieldset>
+      <fieldset class="q" id="qUnder" hidden>
+        <legend data-i18n="qUnder">땅 위에서는 어디까지 탔나요?</legend>
+        <div class="opts two">
+          <label class="opt"><input type="radio" name="under" value="low"><span class="ic" data-icon="litter"></span><span data-i18n="underLow">낙엽과 무릎 아래(50 cm 미만) 풀만</span></label>
+          <label class="opt"><input type="radio" name="under" value="tall"><span class="ic" data-icon="shrub"></span><span data-i18n="underTall">사람 키를 넘는(4 m 미만) 덤불까지</span></label>
+        </div>
+      </fieldset>
+      <fieldset class="q" id="qAsh" hidden>
+        <legend data-i18n="qAsh">땅에 남은 재는 무슨 색인가요?</legend>
+        <div class="opts three">
+          <label class="opt"><input type="radio" name="ash" value="black"><span class="sw" style="background:#2b2b2b"></span><span data-i18n="ashBlack">검은색</span></label>
+          <label class="opt"><input type="radio" name="ash" value="grey"><span class="sw" style="background:#8f918d"></span><span data-i18n="ashGrey">회색</span></label>
+          <label class="opt"><input type="radio" name="ash" value="white"><span class="sw" style="background:#ecebe6;border:1px solid #cfcfc8"></span><span data-i18n="ashWhite">흰색</span></label>
+        </div>
+      </fieldset>
+    </div>
+
+    <div id="paneMeasure" role="tabpanel" hidden>
+      <label class="field"><span data-i18n="frameLabel">20 × 20 cm 틀 안의 재를 모아 단 무게</span>
+        <span class="inline"><input type="number" id="frameG" inputmode="decimal" min="0" step="0.1" placeholder="0.0"><span class="unit">g</span></span></label>
+      <p class="hint" data-i18n="frameHint">재 부하량(Mg/ha) = 틀 안의 재(g) ÷ 4. 여러 곳에서 재서 평균을 넣으면 더 정확합니다.</p>
+    </div>
+
+    <div class="result-line" id="sevOut" aria-live="polite"></div>
+  </section>
+
+  <section class="step" id="step2" aria-labelledby="s2t">
+    <h2 id="s2t"><span class="num">2</span><span data-i18n="s2">흙 pH (선택)</span></h2>
+    <fieldset class="q">
+      <legend class="sr" data-i18n="s2">흙 pH (선택)</legend>
+      <div class="stack">
+        <label class="opt row"><input type="radio" name="phmode" value="after"><span data-i18n="phAfter">불이 난 뒤 흙 pH를 쟀어요</span><input type="number" class="ph" id="phAfter" inputmode="decimal" min="3" max="11" step="0.1" placeholder="pH"></label>
+        <label class="opt row"><input type="radio" name="phmode" value="before"><span data-i18n="phBefore">타지 않은 근처 흙 pH를 쟀어요</span><input type="number" class="ph" id="phBefore" inputmode="decimal" min="3" max="11" step="0.1" placeholder="pH"></label>
+        <label class="opt row"><input type="radio" name="phmode" value="unknown" checked><span data-i18n="phUnknown">몰라요 (국내 산림 흙 기본값 4.6)</span></label>
+      </div>
+    </fieldset>
+    <fieldset class="q">
+      <legend data-i18n="qTexture">흙은 어떤 느낌인가요? (황 양 계산에 씀)</legend>
+      <div class="opts three small">
+        <label class="opt"><input type="radio" name="texture" value="sandy"><span data-i18n="texSandy">모래가 많음</span></label>
+        <label class="opt"><input type="radio" name="texture" value="loam" checked><span data-i18n="texLoam">보통 (양토)</span></label>
+        <label class="opt"><input type="radio" name="texture" value="clay"><span data-i18n="texClay">끈적한 점토</span></label>
+      </div>
+    </fieldset>
+  </section>
+
+  <section class="results" id="results" aria-live="polite" hidden>
+    <h2><span class="num">3</span><span data-i18n="s3">결과</span></h2>
+    <div class="summary" id="summary"></div>
+    <h3 class="sub" data-i18n="cropsTitle">심을 작물 (잘 맞는 순서)</h3>
+    <p class="hint" data-i18n="cropsHint">예상 생장은 재가 없을 때를 100%로 한 값입니다. 카드를 누르면 pH 조절 방법과 근거가 나옵니다.</p>
+    <ol class="crops" id="crops"></ol>
+  </section>
+
+  <section class="about" id="about">
+    <details>
+      <summary data-i18n="howTitle">이 앱은 어떻게 계산하나요?</summary>
+      <ol class="how" id="how"></ol>
+    </details>
+    <details>
+      <summary data-i18n="limitsTitle">한계</summary>
+      <ul id="limits"></ul>
+    </details>
+    <details>
+      <summary data-i18n="sourcesTitle">출처</summary>
+      <table class="src" id="sources"></table>
+      <ul class="refs" id="refs"></ul>
+    </details>
+  </section>
+</main>
+
+<div class="cta" id="cta">
+  <div class="wrap"><button type="button" class="primary" id="goBtn" disabled data-i18n="go">결과 보기</button></div>
+</div>
+
+<footer class="foot wrap">
+  <p data-i18n="foot1">2026 한양대학교 YK인터칼리지 USS 캡스톤 27조의 프로토타입입니다. 실제 농사 결정 전에는 토양검정과 전문가 상담을 함께 하세요.</p>
+  <p class="team">안상현, 오정효, 이준우, 윤상철, 이현진, 박지훈, 서한슬</p>
+</footer>
+
+<script src="assets/data.js"></script>
+<script src="assets/model.js"></script>
+<script src="assets/i18n.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>
