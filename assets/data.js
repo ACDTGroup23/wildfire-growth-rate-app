@@ -42,6 +42,18 @@
   const SULFUR_LB = { sandy: { 0.5: 6, 1: 12, 1.5: 18, 2: 24 }, loam: { 0.5: 10, 1: 20, 1.5: 30, 2: 40 }, clay: { 0.5: 15, 1: 30, 1.5: 45, 2: 60 } };
   const LB_PER_1000FT2_TO_G_PER_M2 = 453.59237 / 92.90304;   // unit conversion
 
+  // Limestone to raise soil pH to 6.5, lb/acre, from the current pH (Ippolito & Bauder, 2021, Table 2).
+  // Rows: sandy loams / silt loams / silty clay loams; light-coloured (1% OM) and dark-coloured (2.5% OM) soils.
+  // pH 6.5 needs none (it is the table's target). Amounts to a lower target T are L(start) − L(T).
+  const LIME_LB_ACRE = {
+    start: [4.5, 5.0, 5.5, 6.0, 6.5],
+    sandy: { light: [4000, 3000, 2000, 500, 0], dark: [6000, 5000, 3000, 1000, 0] },
+    loam:  { light: [6000, 5000, 3000, 1000, 0], dark: [8000, 6000, 4000, 2000, 0] },
+    clay:  { light: [8000, 7000, 5000, 2000, 0], dark: [10000, 8000, 6000, 3000, 0] },
+  };
+  const LIME_TARGET_MAX = 6.5;
+  const LB_PER_ACRE_TO_G_PER_M2 = 453.59237 / 4046.8564224;  // unit conversion
+
   // Team experiment summary (barley)
   const TEAM = {
     trays: { maxG: 0.9875, maxLoad: 8.5, p: 0.47 },   // no height difference up to 0.99 g per cell (two-way ANOVA, 46 plants)
@@ -58,9 +70,12 @@
     { item: { ko: '흙 pH 기본값', en: 'Default soil pH' }, value: '4.6', src: 'Lee & Koo (2020)' },
     { item: { ko: '작물별 염 내성 (문턱 · 0% EC)', en: 'Crop salt tolerance (threshold · 0% EC)' }, value: { ko: '작물 카드에 표시', en: 'shown on each crop' }, src: 'Ayers & Westcot (1985); Maas (1990)' },
     { item: { ko: '작물별 알맞은 pH', en: 'Crop pH ranges' }, value: { ko: '작물 카드에 표시', en: 'shown on each crop' }, src: 'FAO Ecocrop; Hijmans (2021)' },
+    { item: { ko: 'pH에 따른 생장 (적합도)', en: 'Growth response to pH (suitability)' }, value: { ko: '알맞은 범위 100%, 자랄 수 있는 한계 0%, 사이는 직선', en: '100% in the best range, 0% at the limits, straight line between' }, src: 'Hijmans (2021)' },
+    { item: { ko: '염과 pH를 합치는 방법', en: 'Combining salt and pH' }, value: { ko: '더 나쁜 쪽 (최소율의 법칙)', en: 'the more limiting one (law of the minimum)' }, src: 'Van der Ploeg et al. (1999), as cited in Hijmans (2021)' },
+    { item: { ko: '석회 사용량 (pH 6.5까지)', en: 'Lime rates (to pH 6.5)' }, value: { ko: '흙 종류 · 색깔별 표 (모래흙 = 사양토, 양토 = 미사질양토, 점토 = 미사질식양토)', en: 'table by texture and colour (sandy = sandy loam, loam = silt loam, clay = silty clay loam)' }, src: 'Ippolito & Bauder (2021)' },
     { item: { ko: '싹 틀 때 EC 한계 (보리 · 밀)', en: 'EC limit at germination (barley, wheat)' }, value: '4–5 dS/m', src: 'Ayers & Westcot (1985), Table 4 note 4' },
     { item: { ko: '황 사용량', en: 'Sulfur rates' }, value: { ko: '흙 종류별 표', en: 'table by soil texture' }, src: 'Oklahoma State University Extension (n.d.)' },
-    { item: { ko: '석회 양은 완충 pH로 결정', en: 'Lime rate from buffer pH' }, value: '—', src: 'Hannan (n.d.)' },
+    { item: { ko: '정확한 석회 양은 완충 pH 검사로', en: 'Exact lime rate from a buffer pH test' }, value: '—', src: 'Hannan (n.d.); Ippolito & Bauder (2021)' },
     { item: { ko: '보리 실측', en: 'Barley measurements' }, value: { ko: '모종판 46포기 · 화분 4개', en: '46 tray plants · 4 pots' }, src: { ko: '팀 기록표', en: 'Team record sheet' } },
   ];
 
@@ -70,6 +85,7 @@
     'Food and Agriculture Organization of the United Nations. (n.d.). <i>Ecocrop</i> [Database]. https://ecocrop.apps.fao.org/',
     'Hannan, J. (n.d.). <i>How to change your soil’s pH</i>. Iowa State University Extension and Outreach. https://yardandgarden.extension.iastate.edu/how-to/how-change-your-soils-ph',
     'Hijmans, R. J. (2021). <i>Recocrop: Estimating environmental suitability for plants</i> (Version 0.4-0) [Computer software]. https://github.com/cropmodels/Recocrop',
+    'Ippolito, J., & Bauder, T. (2021). <i>Changing soil pH</i>. Colorado State University Extension. https://extension.colostate.edu/resource/changing-soil-ph/',
     'Lee, A. L., & Koo, N. (2020). Comparison of soil physicochemical properties according to the sensitivity of forest soil to acidification in the Republic of Korea. <i>Journal of Korean Society of Forest Science, 109</i>(2), 157–168. https://doi.org/10.14578/jkfs.2020.109.2.157',
     'Maas, E. V. (1990). Crop salt tolerance. In K. K. Tanji (Ed.), <i>Agricultural salinity assessment and management</i> (pp. 262–304). American Society of Civil Engineers.',
     'Maas, E. V., & Hoffman, G. J. (1977). Crop salt tolerance — Current assessment. <i>Journal of the Irrigation and Drainage Division, 103</i>(2), 115–134.',
@@ -79,6 +95,7 @@
     'Santín, C., Doerr, S. H., Otero, X. L., & Chafer, C. J. (2015). Quantity, composition and water contamination potential of ash produced under different wildfire severities. <i>Environmental Research, 142</i>, 297–308.',
   ];
 
-  const api = { SEVERITY, ASH_EC, GEOM, PH_MEAS, PH_DEFAULT, CROPS, GERM_LIMIT, YIELD_LINES, SULFUR_LB, LB_PER_1000FT2_TO_G_PER_M2, TEAM, SOURCES, REFERENCES };
+  const api = { SEVERITY, ASH_EC, GEOM, PH_MEAS, PH_DEFAULT, CROPS, GERM_LIMIT, YIELD_LINES, SULFUR_LB, LB_PER_1000FT2_TO_G_PER_M2,
+    LIME_LB_ACRE, LIME_TARGET_MAX, LB_PER_ACRE_TO_G_PER_M2, TEAM, SOURCES, REFERENCES };
   if (typeof module !== 'undefined' && module.exports) module.exports = api; else root.PFG_DATA = api;
 })(typeof window !== 'undefined' ? window : globalThis);

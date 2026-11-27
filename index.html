@@ -100,8 +100,38 @@
   <section class="results" id="results" aria-live="polite" hidden>
     <h2><span class="num">3</span><span data-i18n="s3">결과</span></h2>
     <div class="summary" id="summary"></div>
+
+    <section class="compare" id="compare" aria-labelledby="cmpTitle">
+      <h3 class="sub" id="cmpTitle" data-i18n="cmpTitle">흙을 바꾸면 이렇게 자랍니다</h3>
+      <p class="hint" data-i18n="cmpHint">재가 없고 pH가 알맞을 때를 100%로 한 예상 생장입니다. 작물을 눌러 바꿔 보세요.</p>
+      <div class="pick">
+        <span class="pick-l" id="scenL" data-i18n="scenLabel">재 종류</span>
+        <div class="seg" id="scenSel" role="group" aria-labelledby="scenL"></div>
+        <span class="pick-l" id="cropL" data-i18n="cropLabel">작물</span>
+        <div class="chips" id="cropSel" role="group" aria-labelledby="cropL"></div>
+      </div>
+      <div class="stage" id="stage">
+        <figure class="pot now">
+          <figcaption id="capNow" data-i18n="cmpNow">그대로 두면</figcaption>
+          <svg viewBox="0 0 160 196" id="svgNow" aria-hidden="true"></svg>
+          <div class="big" id="bigNow">0%</div>
+          <div class="phv" id="phNow"></div>
+        </figure>
+        <figure class="pot after">
+          <figcaption id="capAfter">pH를 맞추면</figcaption>
+          <svg viewBox="0 0 160 196" id="svgAfter" aria-hidden="true"></svg>
+          <div class="big" id="bigAfter">0%</div>
+          <div class="phv" id="phAfterV"></div>
+          <div class="delta" id="delta" hidden></div>
+        </figure>
+      </div>
+      <p class="legend"><span class="ref-sw"></span><span data-i18n="cmpRef">100% = 재 없고 pH 알맞을 때</span><span class="ghost-l" id="ghostL" hidden><span class="ghost-sw"></span><span data-i18n="cmpGhost">점선 = 예상 pH 범위에서 가장 좋은 경우</span></span></p>
+      <div class="todo" id="todo" aria-live="polite"></div>
+      <button type="button" class="ghost replay" id="replay" data-i18n="replay">다시 보기</button>
+    </section>
+
     <h3 class="sub" data-i18n="cropsTitle">심을 작물 (잘 맞는 순서)</h3>
-    <p class="hint" data-i18n="cropsHint">예상 생장은 재가 없을 때를 100%로 한 값입니다. 카드를 누르면 pH 조절 방법과 근거가 나옵니다.</p>
+    <p class="hint"><span data-i18n="cropsHint">예상 생장은 재가 없을 때를 100%로 한 값입니다. 카드를 누르면 pH 조절 방법과 근거가 나옵니다.</span> <span id="cropsScen"></span></p>
     <ol class="crops" id="crops"></ol>
   </section>
 
