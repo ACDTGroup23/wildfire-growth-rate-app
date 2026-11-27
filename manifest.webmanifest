@@ -1,16 +1,29 @@
 {
   "name": "산불 후 파종 길잡이 · Post-Fire Planting Guide",
   "short_name": "파종 길잡이",
-  "description": "산불 강도와 재 양으로 흙의 염도와 pH를 계산하고, 보리와 비슷한 작물 가운데 잘 자랄 것을 추천합니다. USS 캡스톤 27조 프로토타입.",
+  "description": "산불 세기와 재의 양으로 흙의 염도와 pH를 계산하고, 보리와 비슷한 작물 가운데 잘 자랄 작물과 흙을 바꾸는 방법을 알려줘요. USS 캡스톤 27조가 만든 프로토타입이에요.",
   "lang": "ko",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#eef0ec",
-  "theme_color": "#2f6b35",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
   "icons": [
-    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
-    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
   ]
 }
