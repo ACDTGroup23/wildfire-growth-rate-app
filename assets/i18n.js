@@ -9,6 +9,13 @@
     back: { ko: '뒤로 가기', en: 'Back' },
     next: { ko: '다음', en: 'Next' },
     close: { ko: '닫기', en: 'Close' },
+    themeBtn: { ko: '화면 모드', en: 'Display mode' },
+    themeTitle: { ko: '화면 모드를 골라주세요', en: 'Choose a display mode' },
+    themeSystem: { ko: '기기 설정 따르기', en: 'Match my device' },
+    themeSystemSub: { ko: '지금 기기는 {m} 모드예요', en: 'Your device is in {m} mode' },
+    themeLight: { ko: '밝게', en: 'Light' },
+    themeDark: { ko: '어둡게', en: 'Dark' },
+    modeLight: { ko: '밝은', en: 'light' }, modeDark: { ko: '어두운', en: 'dark' },
 
     // home
     homeTitle: { ko: '불탄 땅에 무엇을 심으면 좋을지 알려드릴게요', en: 'Find out what to plant on burnt ground' },

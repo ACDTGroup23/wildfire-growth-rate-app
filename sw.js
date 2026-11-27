@@ -1,5 +1,5 @@
 /* Offline cache for the Post-Fire Planting Guide. Bump VERSION when files change. */
-const VERSION = 'pfg-v4';
+const VERSION = 'pfg-v5';
 const FILES = ['./', 'index.html', 'manifest.webmanifest', 'assets/style.css', 'assets/data.js', 'assets/model.js', 'assets/i18n.js', 'assets/app.js',
   'icons/favicon.svg', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/icon-maskable-512.png', 'icons/apple-touch-icon.png',
   'fonts/Pretendard-Regular.subset.woff2', 'fonts/Pretendard-SemiBold.subset.woff2', 'fonts/Pretendard-Bold.subset.woff2'];

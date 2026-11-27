@@ -5,6 +5,8 @@
   const $ = s => document.querySelector(s);
 
   const state = { lang: 'ko', screen: 'home', mode: 'test', answers: {}, frameG: null, phmode: null, phVal: null, texture: null, scen: 'wildfire', cmp: null, sheet: null };
+  state.theme = 'system';
+  try { const m = localStorage.getItem('pfg-theme'); if (m === 'light' || m === 'dark') state.theme = m; } catch (e) { /* follows the device */ }
   try { const s = localStorage.getItem('pfg-lang'); if (s === 'ko' || s === 'en') state.lang = s; else throw 0; }
   catch (e) { state.lang = (navigator.language || '').toLowerCase().startsWith('ko') ? 'ko' : 'en'; }
 
@@ -295,7 +297,8 @@
     return t('phPart');
   }
   function renderSheet() {
-    const R = compute(), a = R.ranked.find(x => x.crop.id === state.sheet); if (!a) return;
+    if (state.sheet.type === 'theme') { renderThemeSheet(); return; }
+    const R = compute(), a = R.ranked.find(x => x.crop.id === state.sheet.id); if (!a) return;
     const cr = a.crop, none = a.plan.action === 'none';
     $('#sheetBody').innerHTML = `<h2 class="sheet-title" id="sheetTitle" tabindex="-1">${esc(cropName(cr))}</h2>
       <p class="sheet-sub">${esc(cr.sci)} · ${esc(t(cr.use === 'grain' ? 'useGrain' : 'useCover'))}</p>
@@ -310,10 +313,40 @@
       <p class="small">${esc(t('saltSrc', { a: fx(cr.a, 1), ec0: fx(cr.ec0, 1), src: cr.salt === 'FAO 29' ? 'Ayers & Westcot, 1985' : 'Maas, 1990' }))} ${esc(t('phSrc'))}.</p>`;
     $('#sheetClose').textContent = t('close');
     $('#sheetCompare').textContent = t('sheetCompare');
+    $('#sheetCompare').hidden = false; $('#sheetActions').classList.remove('single');
   }
-  function openSheet(id) {
+  // display mode: follow the device, or force light or dark
+  const sysDark = matchMedia('(prefers-color-scheme: dark)');
+  function applyTheme() {
+    const root = document.documentElement;
+    if (state.theme === 'system') root.removeAttribute('data-theme'); else root.setAttribute('data-theme', state.theme);
+    const metas = document.querySelectorAll('meta[name="theme-color"]');
+    metas.forEach((m, i) => m.setAttribute('content', state.theme === 'system' ? (i === 0 ? '#ffffff' : '#17171c') : (state.theme === 'dark' ? '#17171c' : '#ffffff')));
+  }
+  function renderThemeSheet() {
+    const m = t(sysDark.matches ? 'modeDark' : 'modeLight');
+    $('#sheetBody').innerHTML = `<h2 class="sheet-title" id="sheetTitle" tabindex="-1">${esc(t('themeTitle'))}</h2>
+      <div class="opts sheet-opts">${[
+        { v: 'system', label: t('themeSystem'), sub: t('themeSystemSub', { m }) },
+        { v: 'light', label: t('themeLight') },
+        { v: 'dark', label: t('themeDark') },
+      ].map(it => optBtn('theme', it, state.theme === it.v)).join('')}</div>`;
+    $('#sheetClose').textContent = t('close');
+    $('#sheetCompare').hidden = true; $('#sheetActions').classList.add('single');
+  }
+  $('#sheetBody').addEventListener('click', e => {
+    const o = e.target.closest('[data-opt="theme"]'); if (!o) return;
+    state.theme = o.dataset.val;
+    try { if (state.theme === 'system') localStorage.removeItem('pfg-theme'); else localStorage.setItem('pfg-theme', state.theme); } catch (err) { /* this visit only */ }
+    applyTheme(); renderThemeSheet();
+    setTimeout(() => { if (state.sheet) history.back(); }, reduce() ? 0 : 180);
+  });
+  sysDark.addEventListener('change', () => { applyTheme(); if (state.sheet && state.sheet.type === 'theme') renderThemeSheet(); });
+  $('#themeBtn').addEventListener('click', () => openSheet({ type: 'theme' }));
+  function openSheet(sh) {
+    if (state.sheet) return;
     lastFocus = document.activeElement;
-    state.sheet = id; renderSheet();
+    state.sheet = sh; renderSheet();
     $('#sheetWrap').hidden = false; document.body.style.overflow = 'hidden';
     history.pushState({ s: state.screen, sheet: true }, '');
     $('#sheetTitle').focus({ preventScroll: true });
@@ -323,7 +356,7 @@
     if (lastFocus && document.contains(lastFocus)) lastFocus.focus({ preventScroll: true });
   }
   $('#sheetWrap').addEventListener('click', e => { if (e.target.closest('[data-close]')) history.back(); });
-  $('#sheetCompare').addEventListener('click', () => { state.cmp = state.sheet; pendingCompare = true; history.back(); });
+  $('#sheetCompare').addEventListener('click', () => { state.cmp = state.sheet.id; pendingCompare = true; history.back(); });
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && state.sheet) history.back(); });
 
   // ---------- screens ----------
@@ -451,6 +484,7 @@
     const lb = $('#langBtn'); lb.textContent = t('langBtn'); lb.setAttribute('lang', state.lang === 'ko' ? 'en' : 'ko'); lb.setAttribute('aria-label', t('langLabel'));
     $('#backLabel').textContent = t('back');
     $('#installBtn').textContent = t('install');
+    $('#themeBtn').setAttribute('aria-label', t('themeBtn'));
     $('#backBtn').hidden = s === 'home';
     $('.app').classList.toggle('on-grey', s === 'result');
     const p = PROGRESS[s]; $('#progress').hidden = !p; if (p) $('#progressBar').style.width = (p / 7 * 100) + '%';
@@ -476,7 +510,7 @@
     const g = e.target.closest('[data-go]'); if (g) { go(g.dataset.go); return; }
     const sc = e.target.closest('[data-scen]'); if (sc) { state.scen = sc.dataset.scen; updateResult(true); return; }
     const cm = e.target.closest('[data-cmp]'); if (cm) { state.cmp = cm.dataset.cmp; updateResult(false); return; }
-    const cr = e.target.closest('[data-crop]'); if (cr) { openSheet(cr.dataset.crop); return; }
+    const cr = e.target.closest('[data-crop]'); if (cr) { openSheet({ type: 'crop', id: cr.dataset.crop }); return; }
     if (e.target.closest('#replay')) { play(true); return; }
     if (e.target.closest('#restart')) { state.answers = {}; state.mode = 'test'; state.frameG = null; state.phmode = null; state.phVal = null; state.texture = null; state.cmp = null; go('trees'); }
   });
@@ -502,6 +536,7 @@
     window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => { /* offline cache unavailable */ }); });
   }
 
+  applyTheme();
   history.replaceState({ s: 'home' }, '');
   render(false);
 })();
