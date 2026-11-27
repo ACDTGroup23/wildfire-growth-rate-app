@@ -4,7 +4,7 @@
   const D = window.PFG_DATA, M = window.PFG_MODEL, T = window.PFG_T;
   const $ = s => document.querySelector(s);
 
-  const state = { lang: 'ko', screen: 'home', mode: 'test', answers: {}, frameG: null, phmode: null, phVal: null, texture: null, scen: 'wildfire', cmp: null, sheet: null };
+  const state = { lang: 'ko', screen: 'intro', mode: 'test', answers: {}, frameG: null, phmode: null, phVal: null, texture: null, scen: 'wildfire', cmp: null, sheet: null };
   state.theme = 'system';
   try { const m = localStorage.getItem('pfg-theme'); if (m === 'light' || m === 'dark') state.theme = m; } catch (e) { /* follows the device */ }
   try { const s = localStorage.getItem('pfg-lang'); if (s === 'ko' || s === 'en') state.lang = s; else throw 0; }
@@ -71,13 +71,13 @@
   let lock = false, pendingCompare = false;
   function go(s) { if (lock) return; lock = true; state.screen = s; history.pushState({ s }, ''); render(true); lock = false; }
   window.addEventListener('popstate', e => {
-    const st = e.state || { s: 'home' };
+    const st = e.state || { s: 'intro' };
     if (state.sheet) {
       hideSheet();
       if (st.s === state.screen && !st.sheet) { if (pendingCompare) { pendingCompare = false; showCompare(); } return; }
     }
     if (st.sheet) { history.back(); return; }
-    state.screen = valid(st.s) ? st.s : 'home';
+    state.screen = valid(st.s) ? st.s : 'intro';
     render(true);
   });
   $('#backBtn').addEventListener('click', () => history.back());
@@ -145,6 +145,25 @@
   function homeArt() {
     const p = potSVG(6, null, false);
     return `<svg viewBox="0 20 160 168">${p.svg.replace('<g class="plant-g"></g>', bladePaths(0.92, p.base, `fill="${leafColour(1)}"`))}</svg>`;
+  }
+
+  // the team's experiment: four ash amounts per cell, barley of similar height
+  function trayArt() {
+    const doses = D.TEAM.trays.doses, ph = D.PH_MEAS.ph;
+    const cell = (g, i) => {
+      const ashT = g > 0 ? 4 + 14 * g / doses[doses.length - 1] : 0;   // drawing only: thicker grey layer for more ash
+      const top = PG.ground - ashT;
+      let specks = '';
+      if (ashT) for (let k = 0; k < 10; k++) specks += `<circle cx="${20 + (k * 37) % 120}" cy="${(top + 2 + (k * 5) % Math.max(1, ashT - 2)).toFixed(1)}" r="1.4" fill="#74766f"/>`;
+      const sway = [0.86, 0.8, 0.84, 0.88][i];
+      return `<svg x="${i * 82}" y="0" width="74" height="91" viewBox="0 30 160 196">` +
+        `<rect x="12" y="${PG.ground}" width="136" height="${PG.trayH}" rx="8" fill="#6b4a35"/>` +
+        (ashT ? `<rect x="12" y="${top}" width="136" height="${ashT + 3}" rx="2" fill="#a6a8a2"/>${specks}` : '') +
+        bladePaths(sway, +top.toFixed(1), `fill="${leafColour(1)}"`) + '</svg>' +
+        `<text x="${i * 82 + 37}" y="108" text-anchor="middle" class="art-t">${fx(g, 2).replace(/\.?0+$/, '') || '0'} g</text>` +
+        `<text x="${i * 82 + 37}" y="125" text-anchor="middle" class="art-s">pH ${fx(ph[i], 1)}</text>`;
+    };
+    return `<svg viewBox="0 0 320 132" role="img" aria-label="${esc(t('introArtLabel'))}">${doses.map(cell).join('')}</svg>`;
   }
 
   const anim = { now: 0, after: 0, tNow: 0, tNowHi: 0, tAfter: 0, base: PG.ground, raf: 0, played: false, labels: null, io: null };
@@ -360,14 +379,24 @@
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && state.sheet) history.back(); });
 
   // ---------- screens ----------
+  const TEAM_NAMES = ['안상현', '오정효', '이준우', '윤상철', '이현진', '박지훈', '서한슬'];
   const SCREENS = {
+    intro(scr) {
+      const facts = [['introQ', 'introQv'], ['introE', 'introEv'], ['introR', 'introRv'], ['introP', 'introPv']];
+      scr.innerHTML = `<div class="pills"><span class="pill hl">${esc(t('introPillTeam'))}</span><span class="pill">${esc(t('introPillProto'))}</span></div>
+        ${title(t('introTitle'))}<p class="desc">${esc(t('introDesc'))}</p>
+        <figure class="exp-art">${trayArt()}<figcaption>${esc(t('introArt'))}</figcaption></figure>
+        <dl class="facts">${facts.map(([k, v]) => `<div class="fact"><dt>${esc(t(k))}</dt><dd>${esc(t(v))}</dd></div>`).join('')}</dl>
+        <section class="team" aria-labelledby="teamT"><h2 id="teamT">${esc(t('teamTitle'))}</h2><ul>${TEAM_NAMES.map(n => `<li lang="ko">${n}</li>`).join('')}</ul></section>`;
+      setCTA(t('introCta'), true, () => go('home'));
+    },
     home(scr) {
       scr.innerHTML = `<div class="brand"><img src="icons/favicon.svg" alt="" width="32" height="32"><span>${esc(t('appName'))}</span></div>
         ${title(t('homeTitle'))}<p class="desc">${esc(t('homeDesc'))}</p>
         <div class="home-art" aria-hidden="true">${homeArt()}</div>
         <ul class="points"><li>${esc(t('homeP1'))}</li><li>${esc(t('homeP2'))}</li><li>${esc(t('homeP3'))}</li></ul>
         ${linkBtn('aboutLink', 'about')}
-        <p class="foot">${esc(t('foot'))}<br><b>안상현, 오정효, 이준우, 윤상철, 이현진, 박지훈, 서한슬</b></p>`;
+        <p class="foot">${esc(t('footShort'))}</p>`;
       setCTA(t('homeCta'), true, () => go('trees'));
     },
     trees(scr) {
@@ -477,7 +506,7 @@
   };
 
   function render(enter) {
-    if (!valid(state.screen)) { state.screen = 'home'; history.replaceState({ s: 'home' }, ''); }
+    if (!valid(state.screen)) { state.screen = 'intro'; history.replaceState({ s: 'intro' }, ''); }
     const s = state.screen, scr = $('#screen');
     document.documentElement.lang = state.lang;
     document.title = t('appName');
@@ -485,7 +514,7 @@
     $('#backLabel').textContent = t('back');
     $('#installBtn').textContent = t('install');
     $('#themeBtn').setAttribute('aria-label', t('themeBtn'));
-    $('#backBtn').hidden = s === 'home';
+    $('#backBtn').hidden = s === 'intro';
     $('.app').classList.toggle('on-grey', s === 'result');
     const p = PROGRESS[s]; $('#progress').hidden = !p; if (p) $('#progressBar').style.width = (p / 7 * 100) + '%';
     if (enter) { cancelAnimationFrame(anim.raf); anim.played = false; }
@@ -537,6 +566,6 @@
   }
 
   applyTheme();
-  history.replaceState({ s: 'home' }, '');
+  history.replaceState({ s: 'intro' }, '');
   render(false);
 })();

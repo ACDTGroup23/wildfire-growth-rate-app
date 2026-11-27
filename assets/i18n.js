@@ -17,6 +17,24 @@
     themeDark: { ko: '어둡게', en: 'Dark' },
     modeLight: { ko: '밝은', en: 'light' }, modeDark: { ko: '어두운', en: 'dark' },
 
+    // intro (team and prototype)
+    introPillTeam: { ko: 'USS 캡스톤 27조', en: 'USS Capstone Group 27' },
+    introPillProto: { ko: '프로토타입', en: 'Prototype' },
+    introTitle: { ko: '산불 재가 식물에 주는 영향을 실험하고, 그 결과로 앱을 만들었어요', en: 'We tested how wildfire ash affects plants, then built this app from the results' },
+    introDesc: { ko: '한양대학교 YK인터칼리지 USS 캡스톤 27조의 연구로 만든 프로토타입이에요.', en: 'A prototype from the research of USS Capstone Group 27, Hanyang University YK Intercollege.' },
+    introArt: { ko: '칸마다 재의 양을 4단계로 바꿔 보리를 키웠어요', en: 'Barley grown with four amounts of ash per cell' },
+    introArtLabel: { ko: '재 0, 0.17, 0.46, 0.99 g인 칸의 흙 pH는 5.8, 5.7, 7.2, 7.8이었고 보리 키는 비슷했어요.', en: 'Cells with 0, 0.17, 0.46 and 0.99 g of ash had soil pH 5.8, 5.7, 7.2 and 7.8, and similar barley height.' },
+    introQ: { ko: '연구 질문', en: 'Research question' },
+    introQv: { ko: '산불 재가 많을수록 식물이 덜 자랄까요?', en: 'Does more wildfire ash slow plant growth?' },
+    introE: { ko: '실험', en: 'Experiment' },
+    introEv: { ko: '모종판 칸마다 재를 0, 0.17, 0.46, 0.99 g씩 뿌리고 보리를 키웠어요.', en: 'We grew barley in tray cells with 0, 0.17, 0.46 and 0.99 g of ash each.' },
+    introR: { ko: '결과', en: 'Result' },
+    introRv: { ko: '재를 가장 많이 넣은 칸은 흙 pH가 5.8에서 7.8로 올랐지만, 보리 키는 줄지 않았어요 (p = 0.47).', en: 'Soil pH rose from 5.8 to 7.8 in the cells with the most ash, but barley height did not drop (p = 0.47).' },
+    introP: { ko: '프로토타입', en: 'Prototype' },
+    introPv: { ko: '산불 후 파종 길잡이는 이 결과와 문헌값으로 불탄 땅의 흙 상태를 계산하고, 잘 자랄 작물과 흙을 바꾸는 방법을 알려줘요.', en: 'The Post-Fire Planting Guide uses these results and published data to work out the soil after a fire, then shows which crops will grow and how to fix the soil.' },
+    teamTitle: { ko: '팀원', en: 'Team' },
+    introCta: { ko: '프로토타입 시작하기', en: 'Start the prototype' },
+
     // home
     homeTitle: { ko: '불탄 땅에 무엇을 심으면 좋을지 알려드릴게요', en: 'Find out what to plant on burnt ground' },
     homeDesc: { ko: '질문 몇 개에 답하면 재가 흙을 얼마나 바꿨는지 계산해서, 잘 자랄 작물과 흙을 바꾸는 방법을 보여줘요.', en: 'Answer a few questions. The app works out how the ash changed the soil, then shows which crops will grow and how to fix the soil.' },
@@ -25,6 +43,7 @@
     homeP3: { ko: '한 번 열면 인터넷 없이도 쓸 수 있어요', en: 'Works offline after the first visit' },
     homeCta: { ko: '땅 상태 확인하기', en: 'Check the ground' },
     aboutLink: { ko: '계산 방법, 한계, 출처 보기', en: 'How it works, limits and sources' },
+    footShort: { ko: '실제로 심기 전에는 토양검정도 함께 받아보세요.', en: 'Get a soil test as well before you plant.' },
     foot: { ko: '한양대학교 YK인터칼리지 USS 캡스톤 27조가 만든 프로토타입이에요. 실제로 심기 전에는 토양검정도 함께 받아보세요.', en: 'A prototype by USS Capstone Group 27, Hanyang University YK Intercollege. Get a soil test as well before you plant.' },
 
     // questions

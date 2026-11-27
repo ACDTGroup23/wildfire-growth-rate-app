@@ -70,6 +70,25 @@ button { font: inherit; color: inherit; }
 .hint { font-size: 14px; color: var(--text3); margin: 8px 0 0; line-height: 1.5; }
 .hint.err { color: var(--bad); }
 
+/* intro: the team and the prototype */
+.pills { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+.pill { font-size: 13px; font-weight: 600; border-radius: 8px; padding: 4px 10px; background: var(--fill); color: var(--text2); }
+.pill.hl { background: var(--brand-weak); color: var(--brand-text); }
+.exp-art { margin: 24px 0 0; background: var(--fill); border-radius: 20px; padding: 18px 14px 14px; }
+.exp-art svg { width: 100%; height: auto; display: block; }
+.exp-art figcaption { margin-top: 10px; font-size: 13px; color: var(--text3); text-align: center; }
+.art-t { font-size: 12px; font-weight: 600; fill: var(--text2); font-family: var(--font); }
+.art-s { font-size: 11px; fill: var(--text3); font-family: var(--font); }
+.facts { margin: 12px 0 0; }
+.fact { padding: 16px 0; border-top: 1px solid var(--line); }
+.fact:first-child { border-top: 0; }
+.fact dt { font-size: 13px; font-weight: 600; color: var(--text3); }
+.fact dd { margin: 4px 0 0; font-size: 16px; line-height: 1.6; color: var(--text); }
+.team { margin-top: 8px; background: var(--fill); border-radius: 16px; padding: 16px; }
+.team h2 { font-size: 15px; font-weight: 700; margin: 0 0 10px; }
+.team ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.team li { font-size: 15px; font-weight: 600; background: var(--bg); color: var(--text); border-radius: 8px; padding: 6px 10px; }
+
 /* home */
 .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 16px; color: var(--text2); margin-top: 4px; }
 .brand img { width: 32px; height: 32px; border-radius: 8px; }

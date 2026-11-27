@@ -59,7 +59,8 @@
 
   // Team experiment summary (barley)
   const TEAM = {
-    trays: { maxG: 0.9875, maxLoad: 8.5, p: 0.47 },   // no height difference up to 0.99 g per cell (two-way ANOVA, 46 plants)
+    trays: { maxG: 0.9875, maxLoad: 8.5, p: 0.47,     // no height difference up to 0.99 g per cell (two-way ANOVA, 46 plants)
+             doses: [0, 0.1725, 0.46, 0.9875] },     // ash per cell (g), measured: 1/4 of the 32 g-soil amounts
     pots: [{ g: 15.11, load: 15.9, grew: '3/3' }, { g: 32.49, load: 34.2, grew: '1/3' }],
   };
 
