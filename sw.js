@@ -1,5 +1,5 @@
 /* Offline cache for the Post-Fire Planting Guide. Bump VERSION when files change. */
-const VERSION = 'pfg-v2';
+const VERSION = 'pfg-v3';
 const FILES = ['./', 'index.html', 'manifest.webmanifest', 'assets/style.css', 'assets/data.js', 'assets/model.js', 'assets/i18n.js', 'assets/app.js',
   'icons/favicon.svg', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/icon-maskable-512.png', 'icons/apple-touch-icon.png'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(VERSION).then(c => c.addAll(FILES)).then(() => self.skipWaiting())); });

@@ -9,20 +9,23 @@
     high: { load: 34.2, se: 2.1, santin: 'extreme' },  // all fuels consumed, including stems <1 cm thick
   };
 
-  // EC of ash extract converted to ash:water 1:5 (dS/m). Santín et al. (2015) measured at 1:20, so x4 (EC is proportional
-  // to dissolved salt, Rusydi 2018, assuming all salts dissolve at both ratios).
+  // EC of ash extract converted to ash:water 1:5 (dS/m). Santín et al. (2015) measured at 1:20, so x4: if the dissolved salt
+  // is the same at both ratios, EC is inversely proportional to the water used (Richards, 1954, p. 13; close for chloride
+  // salts, less exact for sulfate and carbonate salts).
   const ASH_EC = {
     wildfire: [0.0433 * 4, 0.0564 * 4], // Santín 2015 ash extracts 43.3–56.4 µS/cm (1:20)
     salty: 3.2 * 4,                      // Californian wildfire ash up to 3200 µS/cm (Plumlee 2007; Hageman 2008, as cited in Santín 2015)
     firewood: 33.0,                      // firewood ash, Neina et al. (2020); same worst case as the team's simulator
   };
 
-  // Root-zone geometry of the team's tray cell (EC model of the simulator): soil 4.4 cm deep, pore space 0.71
-  const GEOM = { depth: 4.4, porosity: 0.71, ratio: 5 };  // ISO 11269-2 fill; Bilderback & Fonteno (1987)
+  // Root-zone geometry: the team's tray cell, soil 4.4 cm deep
+  // Pore space: total porosity of 19 Korean commercial horticultural substrates was 89.19–94.05% (Kim & Kim, 2010);
+  // the lowest value is used, which gives the highest (most cautious) EC.
+  const GEOM = { depth: 4.4, porosity: 0.89, ratio: 5 };
 
   // Team measurement 13 Nov: soil-water pH of tray soil after the experiment (two meters averaged)
   const PH_MEAS = { loads: [0, 1.492, 3.979, 8.542], ph: [5.825, 5.67, 7.17, 7.78] };
-  const PH_DEFAULT = 4.6;   // median pH(H2O) of Korean forest soils at the adequate level, 65 plots (Lee & Koo, 2020)
+  const PH_DEFAULT = 4.6;   // median pH(H2O) 4.64 of Korean forest soils graded 'adequate' for acidification sensitivity (65 monitoring plots; 'severe' grade 4.02) (Lee & Koo, 2020)
 
   // Crops: barley and its relatives in the tribe Triticeae with both salt-tolerance and pH data.
   // a = threshold ECe (dS/m), ec0 = ECe at 0% yield; pH ranges from FAO ECOCROP (optimal / absolute)
@@ -62,16 +65,16 @@
 
   const SOURCES = [
     { item: { ko: '산불 강도 등급과 재 부하량', en: 'Fire severity classes and ash loads' }, value: '6.0 · 15.9 · 34.2 Mg/ha', src: 'Santín et al. (2015); classes of Chafer et al. (2004), as cited there' },
-    { item: { ko: '산불 재의 EC (1:20 → 1:5 환산)', en: 'Wildfire ash EC (1:20 → 1:5)' }, value: '0.17–0.23 dS/m', src: 'Santín et al. (2015); ×4 for 1:5 (Rusydi, 2018)' },
+    { item: { ko: '산불 재의 EC (1:20 → 1:5 환산)', en: 'Wildfire ash EC (1:20 → 1:5)' }, value: '0.17–0.23 dS/m', src: 'Santín et al. (2015); ×4 for 1:5 (Richards, 1954)' },
     { item: { ko: '염이 많은 산불 재의 EC', en: 'EC of salty wildfire ash' }, value: '12.8 dS/m', src: 'Plumlee et al. (2007), Hageman et al. (2008), as cited in Santín et al. (2015); ×4' },
     { item: { ko: '땔감 재의 EC (가장 나쁜 경우)', en: 'Firewood ash EC (worst case)' }, value: '33 dS/m', src: 'Neina et al. (2020)' },
-    { item: { ko: '뿌리 층 깊이 · 빈틈 비율', en: 'Root-zone depth · pore space' }, value: '4.4 cm · 0.71', src: { ko: '팀 모종판 칸; Bilderback & Fonteno (1987)', en: "Team's tray cell; Bilderback & Fonteno (1987)" } },
+    { item: { ko: '뿌리 층 깊이 · 빈틈 비율', en: 'Root-zone depth · pore space' }, value: '4.4 cm · 0.89', src: { ko: '팀 모종판 칸; 국내 시판 상토 19종 총공극률의 최솟값 (Kim & Kim, 2010)', en: "Team's tray cell; lowest total porosity of 19 Korean commercial substrates (Kim & Kim, 2010)" } },
     { item: { ko: '재에 따른 흙 pH 상승', en: 'Soil pH rise with ash' }, value: '+0.24 per Mg/ha (0–8.5)', src: { ko: '팀 실측 (11/13, 실험 후 모종판 흙)', en: 'Team measurement (13 Nov, tray soil after the experiment)' } },
-    { item: { ko: '흙 pH 기본값', en: 'Default soil pH' }, value: '4.6', src: 'Lee & Koo (2020)' },
+    { item: { ko: '흙 pH 기본값 (산성화 민감도 \'적정\' 등급 산림 흙의 중앙값)', en: 'Default soil pH (median of forest soils graded "adequate" for acidification sensitivity)' }, value: '4.6', src: 'Lee & Koo (2020)' },
     { item: { ko: '작물별 염 내성 (문턱 · 0% EC)', en: 'Crop salt tolerance (threshold · 0% EC)' }, value: { ko: '작물 카드에 표시', en: 'shown on each crop' }, src: 'Ayers & Westcot (1985); Maas (1990)' },
     { item: { ko: '작물별 알맞은 pH', en: 'Crop pH ranges' }, value: { ko: '작물 카드에 표시', en: 'shown on each crop' }, src: 'FAO Ecocrop; Hijmans (2021)' },
-    { item: { ko: 'pH에 따른 생장 (적합도)', en: 'Growth response to pH (suitability)' }, value: { ko: '알맞은 범위 100%, 자랄 수 있는 한계 0%, 사이는 직선', en: '100% in the best range, 0% at the limits, straight line between' }, src: 'Hijmans (2021)' },
-    { item: { ko: '염과 pH를 합치는 방법', en: 'Combining salt and pH' }, value: { ko: '더 나쁜 쪽 (최소율의 법칙)', en: 'the more limiting one (law of the minimum)' }, src: 'Van der Ploeg et al. (1999), as cited in Hijmans (2021)' },
+    { item: { ko: 'pH에 따른 생장 (적합도)', en: 'Growth response to pH (suitability)' }, value: { ko: '알맞은 범위 100%, 자랄 수 있는 한계 0%, 사이는 직선', en: '100% in the best range, 0% at the limits, straight line between' }, src: 'Ramirez-Villegas et al. (2013); Hijmans (2021)' },
+    { item: { ko: '염과 pH를 합치는 방법', en: 'Combining salt and pH' }, value: { ko: '더 나쁜 쪽 (최소율의 법칙)', en: 'the more limiting one (law of the minimum)' }, src: 'Van der Ploeg et al. (1999); Hijmans (2021)' },
     { item: { ko: '석회 사용량 (pH 6.5까지)', en: 'Lime rates (to pH 6.5)' }, value: { ko: '흙 종류 · 색깔별 표 (모래흙 = 사양토, 양토 = 미사질양토, 점토 = 미사질식양토)', en: 'table by texture and colour (sandy = sandy loam, loam = silt loam, clay = silty clay loam)' }, src: 'Ippolito & Bauder (2021)' },
     { item: { ko: '싹 틀 때 EC 한계 (보리 · 밀)', en: 'EC limit at germination (barley, wheat)' }, value: '4–5 dS/m', src: 'Ayers & Westcot (1985), Table 4 note 4' },
     { item: { ko: '황 사용량', en: 'Sulfur rates' }, value: { ko: '흙 종류별 표', en: 'table by soil texture' }, src: 'Oklahoma State University Extension (n.d.)' },
@@ -81,18 +84,20 @@
 
   const REFERENCES = [
     'Ayers, R. S., & Westcot, D. W. (1985). <i>Water quality for agriculture</i> (FAO Irrigation and Drainage Paper No. 29, Rev. 1). Food and Agriculture Organization of the United Nations.',
-    'Bilderback, T. E., & Fonteno, W. C. (1987). Effects of container geometry and media physical properties on air and water volumes in containers. <i>Journal of Environmental Horticulture, 5</i>(4), 180–182.',
-    'Food and Agriculture Organization of the United Nations. (n.d.). <i>Ecocrop</i> [Database]. https://ecocrop.apps.fao.org/',
+    'Food and Agriculture Organization of the United Nations. (n.d.). <i>Ecocrop</i> [Database]. https://ecocrop.apps.fao.org/ecocrop/srv/en/home',
     'Hannan, J. (n.d.). <i>How to change your soil’s pH</i>. Iowa State University Extension and Outreach. https://yardandgarden.extension.iastate.edu/how-to/how-change-your-soils-ph',
     'Hijmans, R. J. (2021). <i>Recocrop: Estimating environmental suitability for plants</i> (Version 0.4-0) [Computer software]. https://github.com/cropmodels/Recocrop',
     'Ippolito, J., & Bauder, T. (2021). <i>Changing soil pH</i>. Colorado State University Extension. https://extension.colostate.edu/resource/changing-soil-ph/',
+    'Kim, H.-S., & Kim, K.-H. (2010). Evaluation of physio-chemical properties and stability of some commercial horticultural substrates by the European Standard Methods. <i>Korean Journal of Soil Science and Fertilizer, 43</i>(1), 44–50.',
     'Lee, A. L., & Koo, N. (2020). Comparison of soil physicochemical properties according to the sensitivity of forest soil to acidification in the Republic of Korea. <i>Journal of Korean Society of Forest Science, 109</i>(2), 157–168. https://doi.org/10.14578/jkfs.2020.109.2.157',
     'Maas, E. V. (1990). Crop salt tolerance. In K. K. Tanji (Ed.), <i>Agricultural salinity assessment and management</i> (pp. 262–304). American Society of Civil Engineers.',
-    'Maas, E. V., & Hoffman, G. J. (1977). Crop salt tolerance — Current assessment. <i>Journal of the Irrigation and Drainage Division, 103</i>(2), 115–134.',
-    'Neina, D., Faust, S., & Joergensen, R. G. (2020). Characterization of charcoal and firewood ash for use in African peri-urban agriculture. <i>Chemical and Biological Technologies in Agriculture, 7</i>, Article 5.',
+    'Maas, E. V., & Hoffman, G. J. (1977). Crop salt tolerance — Current assessment. <i>Journal of the Irrigation and Drainage Division, 103</i>(2), 115–134. https://doi.org/10.1061/JRCEA4.0001137',
+    'Neina, D., Faust, S., & Joergensen, R. G. (2020). Characterization of charcoal and firewood ash for use in African peri-urban agriculture. <i>Chemical and Biological Technologies in Agriculture, 7</i>, Article 5. https://doi.org/10.1186/s40538-019-0171-2',
     'Oklahoma State University Extension. (n.d.). <i>Acidifying lawns and garden soils in Oklahoma</i>. https://extension.okstate.edu/fact-sheets/acidifying-lawns-and-garden-soils-in-oklahoma',
-    'Rusydi, A. F. (2018). Correlation between conductivity and total dissolved solid in various type of water: A review. <i>IOP Conference Series: Earth and Environmental Science, 118</i>, Article 012019.',
-    'Santín, C., Doerr, S. H., Otero, X. L., & Chafer, C. J. (2015). Quantity, composition and water contamination potential of ash produced under different wildfire severities. <i>Environmental Research, 142</i>, 297–308.',
+    'Ramirez-Villegas, J., Jarvis, A., & Läderach, P. (2013). Empirical approaches for assessing impacts of climate change on agriculture: The EcoCrop model and a case study with grain sorghum. <i>Agricultural and Forest Meteorology, 170</i>, 67–78. https://doi.org/10.1016/j.agrformet.2011.09.005',
+    'Richards, L. A. (Ed.). (1954). <i>Diagnosis and improvement of saline and alkali soils</i> (Agriculture Handbook No. 60). U.S. Department of Agriculture.',
+    'Santín, C., Doerr, S. H., Otero, X. L., & Chafer, C. J. (2015). Quantity, composition and water contamination potential of ash produced under different wildfire severities. <i>Environmental Research, 142</i>, 297–308. https://doi.org/10.1016/j.envres.2015.06.041',
+    'Van der Ploeg, R. R., Böhm, W., & Kirkham, M. B. (1999). On the origin of the theory of mineral nutrition of plants and the law of the minimum. <i>Soil Science Society of America Journal, 63</i>(5), 1055–1062.',
   ];
 
   const api = { SEVERITY, ASH_EC, GEOM, PH_MEAS, PH_DEFAULT, CROPS, GERM_LIMIT, YIELD_LINES, SULFUR_LB, LB_PER_1000FT2_TO_G_PER_M2,
